@@ -4,17 +4,26 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "prettier": "^3.9.9"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "dotenv": "^18.0.5",
+    "pg": "^8.23.1",
     "prisma": "7"
   },
   "scripts": {
-    "postinstall": "prisma skills sync || exit 0"
+    "start": "bun run src/index.ts",
+    "admin": "npm --prefix admin run dev",
+    "admin:build": "npm --prefix admin run build",
+    "admin:start": "npm --prefix admin run start",
+    "postinstall": "prisma skills sync || exit 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   }
 }

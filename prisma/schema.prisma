@@ -12,8 +12,37 @@ datasource db {
   provider = "postgresql"
 }
 
-model FloatPrice {
-  id        Int      @id @default(autoincrement())
-  price     Float
-  createdAt DateTime @default(now())
+model Item {
+  id             Int           @id @default(autoincrement())
+  name           String
+  marketHashName String
+  image          String?
+  weapon         String?
+  category       String?
+  pattern        String?
+  wear           String?
+  rarity         String?
+  minFloat       Float?
+  maxFloat       Float?
+  isStatTrak     Boolean?
+  isSouvenir     Boolean?
+  itemHistories  ItemHistory[]
+}
+
+model ItemHistory {
+  id         Int      @id @default(autoincrement())
+  externalId String   @unique
+  skinId     Int
+  skin       Item     @relation(fields: [skinId], references: [id])
+  capturedAt DateTime @default(now())
+
+  price      Int
+  assetId    String
+  defIndex   Int
+  paintIndex Int
+  paintSeed  Int
+  floatValue Float
+  soldAt     DateTime
+
+  @@index([skinId])
 }
