@@ -1,5 +1,6 @@
 import type { Item, ItemHistory, Prisma } from '../generated/prisma/client';
 import { getItemHistory } from './api/history';
+import { sendTelegramMessage } from './api/telegram';
 import { addItemHistory } from './repository/itemHistory';
 import { getAllItems, getItemById } from './repository/items';
 
@@ -55,21 +56,27 @@ async function processRound(items: Item[], workersCount: number) {
 }
 
 async function runQueue(items: Item[], workersCount: number) {
-  // while (true) {
-  const startedAt = Date.now();
+  while (true) {
+    const startedAt = Date.now();
 
-  const [addedCount, errorsCount] = await processRound(items, workersCount);
+    const [addedCount, errorsCount] = await processRound(items, workersCount);
 
-  const seconds = ((Date.now() - startedAt) / 1000).toFixed(1);
+    const seconds = ((Date.now() - startedAt) / 1000).toFixed(1);
 
-  console.log(
-    `Круг завершён. Добавлено новых записей: ${addedCount}. Время: ${seconds} сек. Ошибок ${errorsCount}`,
-  );
+    const message = `Круг завершён. Добавлено новых записей: ${addedCount}. Время: ${seconds} сек. Ошибок ${errorsCount}`;
 
-  await new Promise((resolve) => {
-    setTimeout(resolve, 60_000);
-  });
-  // }
+    console.log(message);
+
+    try {
+      await sendTelegramMessage(message);
+    } catch (error) {
+      console.error('Ошибка отправки сообщения в Telegram:', error);
+    }
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 60_000);
+    });
+  }
 }
 
 const items = await getAllItems();
